@@ -47,7 +47,7 @@
 #  [*manage_user*]
 #  Whether to create user or rely on external code for that
 #
-#  [*os*]
+#  [*os_lc*]
 #  Operating system (linux is the only one supported)
 #
 #  [*package_ensure*]
@@ -106,14 +106,14 @@ class prometheus::postgres_exporter (
   Boolean $purge_config_dir      = true,
   Boolean $restart_on_change     = true,
   Boolean $service_enable        = true,
-  String[1] $service_ensure         = 'running',
-  String[1] $service_name           = 'postgres_exporter',
+  String[1] $service_ensure      = 'running',
+  String[1] $service_name        = 'postgres_exporter',
   Optional[String] $init_style   = $prometheus::init_style,
-  String[1] $install_method         = $prometheus::install_method,
+  String[1] $install_method      = $prometheus::install_method,
   Boolean $manage_group          = true,
   Boolean $manage_service        = true,
   Boolean $manage_user           = true,
-  String[1] $os                  = $prometheus::os,
+  String[1] $os_lc               = $prometheus::os_lc,
   String $options                = '',
   Optional[String] $download_url = undef,
   String[1] $arch                = $prometheus::real_arch,
@@ -122,7 +122,7 @@ class prometheus::postgres_exporter (
 
   $release = "v${version}"
 
-  $real_download_url = pick($download_url, "${download_url_base}/download/${release}/${package_name}_${release}_${os}-${arch}.${download_extension}")
+  $real_download_url = pick($download_url, "${download_url_base}/download/${release}/${package_name}_${release}_${os_lc}-${arch}.${download_extension}")
 
   $notify_service = $restart_on_change ? {
     true    => Service[$service_name],
@@ -155,7 +155,7 @@ class prometheus::postgres_exporter (
     # postgres_exporter lacks.
     # TODO: patch prometheus::daemon to support custom extract directories
     $exporter_install_method = 'none'
-    $install_dir = "/opt/${service_name}-${version}.${os}-${arch}"
+    $install_dir = "/opt/${service_name}-${version}.${os_lc}-${arch}"
     file { $install_dir:
       ensure => 'directory',
       owner  => 'root',
@@ -187,7 +187,7 @@ class prometheus::postgres_exporter (
     version            => $version,
     download_extension => $download_extension,
     env_vars           => $env_vars,
-    os                 => $os,
+    os_lc              => $os_lc,
     arch               => $arch,
     bin_dir            => $bin_dir,
     notify_service     => $notify_service,

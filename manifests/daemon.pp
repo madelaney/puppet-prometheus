@@ -20,7 +20,7 @@
 #  [*download_extension*]
 #  Extension for the release binary archive
 #
-#  [*os*]
+#  [*os_lc*]
 #  Operating system (linux is the only one supported)
 #
 #  [*arch*]
@@ -61,7 +61,7 @@ define prometheus::daemon (
   String $group,
   String $install_method          = $prometheus::install_method,
   String $download_extension      = $prometheus::download_extension,
-  String $os                      = $prometheus::os,
+  String $os_lc                   = $prometheus::os_lc,
   String $arch                    = $prometheus::real_arch,
   Stdlib::Absolutepath $bin_dir   = $prometheus::bin_dir,
   Optional[String] $package_name  = undef,
@@ -82,17 +82,17 @@ define prometheus::daemon (
   case $install_method {
     'url': {
       if $download_extension == '' {
-        file { "/opt/${name}-${version}.${os}-${arch}":
+        file { "/opt/${name}-${version}.${os_lc}-${arch}":
           ensure => directory,
           owner  => 'root',
           group  => 0, # 0 instead of root because OS X uses "wheel".
           mode   => '0755',
         }
-        -> archive { "/opt/${name}-${version}.${os}-${arch}/${name}":
+        -> archive { "/opt/${name}-${version}.${os_lc}-${arch}/${name}":
           ensure          => present,
           source          => $real_download_url,
           checksum_verify => false,
-          before          => File["/opt/${name}-${version}.${os}-${arch}/${name}"],
+          before          => File["/opt/${name}-${version}.${os_lc}-${arch}/${name}"],
         }
       } else {
         archive { "/tmp/${name}-${version}.${download_extension}":
@@ -101,12 +101,12 @@ define prometheus::daemon (
           extract_path    => '/opt',
           source          => $real_download_url,
           checksum_verify => false,
-          creates         => "/opt/${name}-${version}.${os}-${arch}/${name}",
+          creates         => "/opt/${name}-${version}.${os_lc}-${arch}/${name}",
           cleanup         => true,
-          before          => File["/opt/${name}-${version}.${os}-${arch}/${name}"],
+          before          => File["/opt/${name}-${version}.${os_lc}-${arch}/${name}"],
         }
       }
-      file { "/opt/${name}-${version}.${os}-${arch}/${name}":
+      file { "/opt/${name}-${version}.${os_lc}-${arch}/${name}":
           owner => 'root',
           group => 0, # 0 instead of root because OS X uses "wheel".
           mode  => '0555',
@@ -114,7 +114,7 @@ define prometheus::daemon (
       -> file { "${bin_dir}/${name}":
           ensure => link,
           notify => $notify_service,
-          target => "/opt/${name}-${version}.${os}-${arch}/${name}",
+          target => "/opt/${name}-${version}.${os_lc}-${arch}/${name}",
       }
     }
     'package': {

@@ -39,7 +39,7 @@
 #  [*manage_user*]
 #  Whether to create user or rely on external code for that
 #
-#  [*os*]
+#  [*os_lc*]
 #  Operating system (linux is the only one supported)
 #
 #  [*package_ensure*]
@@ -82,7 +82,7 @@ class prometheus::graphite_exporter (
   Boolean $manage_service,
   Boolean $manage_user,
   String $options,
-  String $os                     = $prometheus::os,
+  String $os_lc                  = $prometheus::os_lc,
   String $init_style             = $prometheus::init_style,
   String $install_method         = $prometheus::install_method,
   Optional[String] $download_url = undef,
@@ -90,7 +90,7 @@ class prometheus::graphite_exporter (
   String $bin_dir                = $prometheus::bin_dir,
 ) inherits prometheus {
 
-  $real_download_url = pick($download_url,"${download_url_base}/download/v${version}/${package_name}-${version}.${os}-${arch}.${download_extension}")
+  $real_download_url = pick($download_url,"${download_url_base}/download/v${version}/${package_name}-${version}.${os_lc}-${arch}.${download_extension}")
 
   $notify_service = $restart_on_change ? {
     true    => Service['graphite_exporter'],
@@ -101,7 +101,7 @@ class prometheus::graphite_exporter (
     install_method     => $install_method,
     version            => $version,
     download_extension => $download_extension,
-    os                 => $os,
+    os                 => $os_lc,
     arch               => $arch,
     real_download_url  => $real_download_url,
     bin_dir            => $bin_dir,

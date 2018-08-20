@@ -37,7 +37,7 @@
 #  [*install_method*]
 #  Installation method: url or package (only url is supported currently)
 #
-#  [*os*]
+#  [*os_lc*]
 #  Operating system (linux is supported)
 #
 #  [*download_url*]
@@ -178,7 +178,7 @@ class prometheus (
   Hash $extra_alerts    = {},
   Hash $config_hash     = {},
   Hash $config_defaults = {},
-  String $os            = downcase($facts['kernel']),
+  String $os_lc         = downcase($facts['kernel']),
   Optional[Variant[Stdlib::HTTPUrl, Stdlib::Unixpath, String[1]]] $external_url = undef,
 ) {
 

@@ -48,7 +48,7 @@
 #  [*modules*]
 #  Structured, array of blackbox module definitions for different probe types
 #
-#  [*os*]
+#  [*os_lc*]
 #  Operating system (linux is the only one supported)
 #
 #  [*package_ensure*]
@@ -109,7 +109,7 @@ class prometheus::blackbox_exporter (
   Boolean $manage_group          = true,
   Boolean $manage_service        = true,
   Boolean $manage_user           = true,
-  String $os                     = $prometheus::os,
+  String $os_lc                  = $prometheus::os_lc,
   String $extra_options          = '',
   Optional[String] $download_url = undef,
   String $config_mode            = $prometheus::config_mode,
@@ -125,7 +125,7 @@ class prometheus::blackbox_exporter (
   else {
     $release = $version
   }
-  $real_download_url = pick($download_url,"${download_url_base}/download/${release}/${package_name}-${version}.${os}-${arch}.${download_extension}")
+  $real_download_url = pick($download_url,"${download_url_base}/download/${release}/${package_name}-${version}.${os_lc}-${arch}.${download_extension}")
   $notify_service = $restart_on_change ? {
     true    => Service[$service_name],
     default => undef,
@@ -147,7 +147,7 @@ class prometheus::blackbox_exporter (
     install_method     => $install_method,
     version            => $version,
     download_extension => $download_extension,
-    os                 => $os,
+    os_lc              => $os_lc,
     arch               => $arch,
     real_download_url  => $real_download_url,
     bin_dir            => $bin_dir,

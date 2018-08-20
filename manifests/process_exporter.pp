@@ -42,7 +42,7 @@
 #  [*manage_user*]
 #  Whether to create user or rely on external code for that
 #
-#  [*os*]
+#  [*os_lc*]
 #  Operating system (linux is the only one supported)
 #
 #  [*package_ensure*]
@@ -89,7 +89,7 @@ class prometheus::process_exporter(
   Boolean $manage_group                                              = true,
   Boolean $manage_service                                            = true,
   Boolean $manage_user                                               = true,
-  String $os                                                         = $prometheus::os,
+  String $os_lc                                                      = $prometheus::os_lc,
   String $extra_options                                              = '',
   String $config_mode                                                = $prometheus::config_mode,
   Optional[Variant[Stdlib::HTTPSUrl, Stdlib::HTTPUrl]] $download_url = undef,
@@ -99,10 +99,10 @@ class prometheus::process_exporter(
 
   # Prometheus removed a dot on the realease name at 0.2.0
   if versioncmp ($version, '0.2.0') >= 0 {
-    $filename = "${package_name}-${version}${os}_${arch}.${download_extension}"
+    $filename = "${package_name}-${version}${os_lc}_${arch}.${download_extension}"
   }
   else {
-    $filename = "${package_name}-${version}.${os}-${arch}.${download_extension}"
+    $filename = "${package_name}-${version}.${os_lc}-${arch}.${download_extension}"
   }
   $real_download_url = pick($download_url,"${download_url_base}/download/v${version}/${filename}")
   $notify_service = $restart_on_change ? {
@@ -125,7 +125,7 @@ class prometheus::process_exporter(
     install_method     => $install_method,
     version            => $version,
     download_extension => $download_extension,
-    os                 => $os,
+    os_lc              => $os_lc,
     arch               => $arch,
     real_download_url  => $real_download_url,
     bin_dir            => $bin_dir,

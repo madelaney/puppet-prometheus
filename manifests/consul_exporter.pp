@@ -51,7 +51,7 @@
 #  [*manage_user*]
 #  Whether to create user or rely on external code for that
 #
-#  [*os*]
+#  [*os_lc*]
 #  Operating system (linux is the only one supported)
 #
 #  [*package_ensure*]
@@ -105,7 +105,7 @@ class prometheus::consul_exporter (
   Boolean $manage_group          = true,
   Boolean $manage_service        = true,
   Boolean $manage_user           = true,
-  String $os                     = $prometheus::os,
+  String $os_lc                  = $prometheus::os_lc,
   String $init_style             = $prometheus::init_style,
   String $install_method         = $prometheus::install_method,
   String $extra_options          = '',
@@ -119,7 +119,7 @@ class prometheus::consul_exporter (
     fail("I only support consul_exporter version '0.3.0' or higher")
   }
 
-  $real_download_url = pick($download_url,"${download_url_base}/download/v${version}/${package_name}-${version}.${os}-${arch}.${download_extension}")
+  $real_download_url = pick($download_url,"${download_url_base}/download/v${version}/${package_name}-${version}.${os_lc}-${arch}.${download_extension}")
 
   if $consul_health_summary {
     $real_consul_health_summary = '-consul.health-summary'
@@ -138,7 +138,7 @@ class prometheus::consul_exporter (
     install_method     => $install_method,
     version            => $version,
     download_extension => $download_extension,
-    os                 => $os,
+    os_lc              => $os_lc,
     arch               => $arch,
     real_download_url  => $real_download_url,
     bin_dir            => $bin_dir,

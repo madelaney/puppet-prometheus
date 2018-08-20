@@ -51,7 +51,7 @@
 #  [*namespace*]
 #  Namespace for the metrics, defaults to `redis`.
 #
-#  [*os*]
+#  [*os_lc*]
 #  Operating system (linux is the only one supported)
 #
 #  [*package_ensure*]
@@ -102,7 +102,7 @@ class prometheus::redis_exporter (
   Boolean $manage_service        = true,
   Boolean $manage_user           = true,
   String $namespace              = 'redis',
-  String $os                     = $prometheus::os,
+  String $os_lc                  = $prometheus::os_lc,
   String $extra_options          = '',
   Optional[String] $download_url = undef,
   String $arch                   = $prometheus::real_arch,
@@ -111,7 +111,7 @@ class prometheus::redis_exporter (
 
   $release = "v${version}"
 
-  $real_download_url = pick($download_url, "${download_url_base}/download/${release}/${package_name}-${release}.${os}-${arch}.${download_extension}")
+  $real_download_url = pick($download_url, "${download_url_base}/download/${release}/${package_name}-${release}.${os_lc}-${arch}.${download_extension}")
   $notify_service = $restart_on_change ? {
     true    => Service[$service_name],
     default => undef,
@@ -126,7 +126,7 @@ class prometheus::redis_exporter (
     # redis_exporter lacks.
     # TODO: patch prometheus::daemon to support custom extract directories
     $exporter_install_method = 'none'
-    $install_dir = "/opt/${service_name}-${version}.${os}-${arch}"
+    $install_dir = "/opt/${service_name}-${version}.${os_lc}-${arch}"
     file { $install_dir:
       ensure => 'directory',
       owner  => 'root',
@@ -156,7 +156,7 @@ class prometheus::redis_exporter (
     install_method     => $exporter_install_method,
     version            => $version,
     download_extension => $download_extension,
-    os                 => $os,
+    os_lc              => $os_lc,
     arch               => $arch,
     bin_dir            => $bin_dir,
     notify_service     => $notify_service,

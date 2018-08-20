@@ -45,7 +45,7 @@
 #  [*manage_user*]
 #  Whether to create user or rely on external code for that
 #
-#  [*os*]
+#  [*os_lc*]
 #  Operating system (linux is the only one supported)
 #
 #  [*package_ensure*]
@@ -91,14 +91,14 @@ class prometheus::nginx_vts_exporter(
   Boolean          $manage_group      = true,
   Boolean          $manage_service    = true,
   Boolean          $manage_user       = true,
-  String           $os                = $prometheus::os,
+  String           $os_lc             = $prometheus::os_lc,
   String           $extra_options     = '',
   Optional[String] $download_url      = undef,
   String           $arch              = $prometheus::real_arch,
   String           $bin_dir           = $prometheus::bin_dir,
 ) inherits prometheus {
 
-  $real_download_url = pick($download_url,"${download_url_base}/download/v${version}/${package_name}-${version}.${os}-${arch}.${download_extension}")
+  $real_download_url = pick($download_url,"${download_url_base}/download/v${version}/${package_name}-${version}.${os_lc}-${arch}.${download_extension}")
   $notify_service = $restart_on_change ? {
     true    => Service['nginx-vts-exporter'],
     default => undef,
@@ -110,7 +110,7 @@ class prometheus::nginx_vts_exporter(
     install_method     => $install_method,
     version            => $version,
     download_extension => $download_extension,
-    os                 => $os,
+    os_lc              => $os_lc,
     arch               => $arch,
     real_download_url  => $real_download_url,
     bin_dir            => $bin_dir,
